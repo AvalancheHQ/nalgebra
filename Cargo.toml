@@ -114,7 +114,7 @@ encase = { version = "0.12", optional = true }
 [dev-dependencies]
 serde_json = "1.0"
 rand_xorshift = "0.5"
-criterion = { version = "0.7", features = ["html_reports"] }
+criterion = { version = "5.0.3", package = "codspeed-criterion-compat", features = ["html_reports"] }
 nalgebra = { path = ".", features = ["debug", "compare", "rand", "macros"] }
 
 # For matrix comparison macro

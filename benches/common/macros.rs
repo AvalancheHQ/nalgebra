@@ -10,13 +10,15 @@ macro_rules! bench_binop(
         fn $name(bh: &mut criterion::Criterion) {
             use rand::SeedableRng;
             use rand::RngExt;
+            use std::hint::black_box;
 
             let mut rng = XorShiftRng::seed_from_u64(0);
 
             bh.bench_function(stringify!($name), |bh| bh.iter_batched(
                 || (rng.random::<$t1>(), rng.random::<$t2>()),
+                #[inline(never)]
                 |args| {
-                    args.0.$binop(args.1)
+                    black_box(black_box(args.0).$binop(black_box(args.1)))
                 },
                 criterion::BatchSize::SmallInput),
             );
@@ -29,13 +31,15 @@ macro_rules! bench_binop_ref(
         fn $name(bh: &mut criterion::Criterion) {
             use rand::SeedableRng;
             use rand::RngExt;
+            use std::hint::black_box;
 
             let mut rng = XorShiftRng::seed_from_u64(0);
 
             bh.bench_function(stringify!($name), |bh| bh.iter_batched_ref(
                 || (rng.random::<$t1>(), rng.random::<$t2>()),
+                #[inline(never)]
                 |args| {
-                    args.0.$binop(&args.1)
+                    black_box(black_box(&args.0).$binop(black_box(&args.1)))
                 },
                 criterion::BatchSize::SmallInput),
             );
@@ -61,8 +65,9 @@ macro_rules! bench_binop_single_1st(
 
             bh.bench_function(stringify!($name), |bh| bh.iter_batched(
                 || rng.random::<$t2>(),
+                #[inline(never)]
                 |second| {
-                    first.$binop(second)
+                    black_box(first.$binop(black_box(second)))
                 },
                 criterion::BatchSize::SmallInput),
             );
@@ -83,8 +88,9 @@ macro_rules! bench_binop_single_1st_ref(
 
             bh.bench_function(stringify!($name), |bh| bh.iter_batched_ref(
                 || rng.random::<$t2>(),
+                #[inline(never)]
                 |second| {
-                    first.$binop(second)
+                    black_box(first.$binop(black_box(second)))
                 },
                 criterion::BatchSize::SmallInput),
             );
@@ -97,13 +103,15 @@ macro_rules! bench_unop(
         fn $name(bh: &mut criterion::Criterion) {
             use rand::SeedableRng;
             use rand::RngExt;
+            use std::hint::black_box;
 
             let mut rng = XorShiftRng::seed_from_u64(0);
 
             bh.bench_function(stringify!($name), |bh| bh.iter_batched_ref(
                 || rng.random::<$t>(),
+                #[inline(never)]
                 |arg| {
-                    arg.$unop()
+                    black_box(black_box(arg).$unop())
                 },
                 criterion::BatchSize::SmallInput),
             );
